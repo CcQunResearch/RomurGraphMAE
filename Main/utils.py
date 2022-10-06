@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/5/27 15:41
-# @Author  : CcQun
-# @Email   : 13698603020@163.com
+# @Author  :
+# @Email   :
 # @File    : utils.py
 # @Software: PyCharm
 # @Note    :
@@ -54,6 +54,7 @@ def clean_comment(comment_text):
 def create_log_dict_pretrain(args):
     log_dict = {}
     log_dict['dataset'] = args.dataset
+    log_dict['unsup dataset'] = args.unsup_dataset
     log_dict['vector size'] = args.vector_size
     log_dict['unsup train size'] = args.unsup_train_size
     log_dict['runs'] = args.runs
@@ -94,6 +95,7 @@ def create_log_dict_pretrain(args):
 def create_log_dict_semisup(args):
     log_dict = {}
     log_dict['dataset'] = args.dataset
+    log_dict['unsup dataset'] = args.unsup_dataset
     log_dict['vector size'] = args.vector_size
     log_dict['unsup train size'] = args.unsup_train_size
     log_dict['runs'] = args.runs
@@ -123,6 +125,46 @@ def create_log_dict_semisup(args):
     log_dict['lr'] = args.lr
     log_dict['epochs'] = args.epochs
     log_dict['weight decay'] = args.weight_decay
+
+    log_dict['record'] = []
+    return log_dict
+
+
+def create_log_dict_sup(args):
+    log_dict = {}
+    log_dict['dataset'] = args.dataset
+    log_dict['vector size'] = args.vector_size
+    log_dict['unsup train size'] = args.unsup_train_size
+    log_dict['runs'] = args.runs
+
+    log_dict['batch size'] = args.batch_size
+    log_dict['num heads'] = args.num_heads
+    log_dict['num out heads'] = args.num_out_heads
+    log_dict['num layers'] = args.num_layers
+    log_dict['num hidden'] = args.num_hidden
+    log_dict['residual'] = args.residual
+    log_dict['in drop'] = args.in_drop
+    log_dict['attn drop'] = args.attn_drop
+    log_dict['norm'] = args.norm
+    log_dict['negative slope'] = args.negative_slope
+    log_dict['activation'] = args.activation
+    log_dict['mask rate'] = args.mask_rate
+    log_dict['drop edge rate'] = args.drop_edge_rate
+    log_dict['replace rate'] = args.replace_rate
+    log_dict['concat hidden'] = args.concat_hidden
+    log_dict['pooling'] = args.pooling
+
+    log_dict['encoder'] = args.encoder
+    log_dict['decoder'] = args.decoder
+    log_dict['loss fn'] = args.loss_fn
+    log_dict['alpha l'] = args.alpha_l
+
+    log_dict['lr'] = args.lr
+    log_dict['epochs'] = args.epochs
+    log_dict['weight decay'] = args.weight_decay
+
+    log_dict['use unlabel'] = args.use_unlabel
+    log_dict['use unsup loss'] = args.use_unsup_loss
 
     log_dict['record'] = []
     return log_dict

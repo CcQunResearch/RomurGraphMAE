@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/8/10 11:06
-# @Author  : CcQun
-# @Email   : 13698603020@163.com
+# @Author  :
+# @Email   :
 # @File    : main(pretrain).py
 # @Software: PyCharm
 # @Note    :
@@ -139,6 +139,7 @@ if __name__ == '__main__':
 
     unsup_train_size = args.unsup_train_size
     dataset = args.dataset
+    unsup_dataset = args.unsup_dataset
     vector_size = args.vector_size
     device = args.gpu if args.cuda else 'cpu'
     runs = args.runs
@@ -155,7 +156,7 @@ if __name__ == '__main__':
     train_path = osp.join(label_dataset_path, 'train')
     val_path = osp.join(label_dataset_path, 'val')
     test_path = osp.join(label_dataset_path, 'test')
-    unlabel_dataset_path = osp.join(dirname, '..', 'Data', 'Weibo-unsup', 'dataset')
+    unlabel_dataset_path = osp.join(dirname, '..', 'Data', unsup_dataset, 'dataset')
     model_path = osp.join(dirname, '..', 'Model', f'w2v_{dataset}_{unsup_train_size}_{vector_size}.model')
 
     log_name = time.strftime("%Y-%m-%d %H-%M-%S", time.localtime(time.time()))
@@ -169,9 +170,7 @@ if __name__ == '__main__':
     if not osp.exists(model_path):
         if dataset == 'Weibo':
             sort_weibo_dataset(label_source_path, label_dataset_path)
-        elif dataset == 'Weibo-self':
-            sort_weibo_self_dataset(label_source_path, label_dataset_path, unlabel_dataset_path)
-        elif dataset == 'Weibo-2class' or dataset == 'Weibo-2class-long':
+        elif 'DRWeibo' in dataset:
             sort_weibo_2class_dataset(label_source_path, label_dataset_path)
 
         sentences = collect_sentences(label_dataset_path, unlabel_dataset_path, unsup_train_size)
@@ -233,11 +232,9 @@ if __name__ == '__main__':
                                  'test rec T': [], 'test rec F': [], 'test f1 T': [], 'test f1 F': []}
 
                 if dataset == 'Weibo':
-                    sort_weibo_dataset(label_source_path, label_dataset_path, k)
-                elif dataset == 'Weibo-self':
-                    sort_weibo_self_dataset(label_source_path, label_dataset_path, unlabel_dataset_path, k)
-                elif dataset == 'Weibo-2class' or dataset == 'Weibo-2class-long':
-                    sort_weibo_2class_dataset(label_source_path, label_dataset_path, k)
+                    sort_weibo_dataset(label_source_path, label_dataset_path, k_shot=k)
+                elif 'DRWeibo' in dataset:
+                    sort_weibo_2class_dataset(label_source_path, label_dataset_path, k_shot=k)
 
                 train_dataset = WeiboDataset(dataset, train_path, word2vec)
                 val_dataset = WeiboDataset(dataset, val_path, word2vec)

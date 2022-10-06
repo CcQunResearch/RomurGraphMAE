@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2022/5/7 20:26
+# @Time    : 2022/9/28 19:32
 # @Author  :
 # @Email   :
-# @File    : record.py
+# @File    : record_sup.py
 # @Software: PyCharm
 # @Note    :
 import os
@@ -26,8 +26,7 @@ if __name__ == '__main__':
 
             log = json.load(open(filepath, 'r', encoding='utf-8'))
             print('dataset:', log['dataset'])
-            print('unsup dataset:', log['unsup dataset'])
-            print('vector size:', log['vector size'])
+            print('vector_size:', log['vector size'])
             print('unsup train size:', log['unsup train size'])
             print('runs:', log['runs'])
 
@@ -56,6 +55,9 @@ if __name__ == '__main__':
             print('lr:', log['lr'])
             print('epochs:', log['epochs'])
             print('weight decay:', log['weight decay'])
+
+            print('use unlabel:', log['use unlabel'])
+            print('use unsup loss:', log['use unsup loss'])
 
             acc_list = []
             for run in log['record']:

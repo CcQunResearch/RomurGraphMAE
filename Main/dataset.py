@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/5/27 18:59
-# @Author  : CcQun
-# @Email   : 13698603020@163.com
+# @Author  :
+# @Email   :
 # @File    : dataset.py
 # @Software: PyCharm
 # @Note    :
@@ -69,6 +69,14 @@ class WeiboDataset(DGLDataset):
                         row.append(post['comment'][id_to_index[comment['parent']]]['comment id'] + 1)
                     col.append(comment['comment id'] + 1)
                     num_node += 1
+
+                # tdrow = row
+                # tdcol = col
+                # burow = col
+                # bucol = row
+                # row = tdrow + burow
+                # col = tdcol + bucol
+
                 graph = DGLGraph()
                 graph.add_nodes(num_node)
                 graph.add_edges(row, col)
@@ -92,6 +100,14 @@ class WeiboDataset(DGLDataset):
                     row.append(comment['parent'] + 1)
                     col.append(comment['comment id'] + 1)
                     num_node += 1
+
+                # tdrow = row
+                # tdcol = col
+                # burow = col
+                # bucol = row
+                # row = tdrow + burow
+                # col = tdcol + bucol
+
                 graph = DGLGraph()
                 graph.add_nodes(num_node)
                 graph.add_edges(row, col)

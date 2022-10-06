@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2022/8/22 11:08
+# @Time    : 2022/9/28 19:24
 # @Author  :
 # @Email   :
-# @File    : main(semisup).py
+# @File    : main(sup).py
 # @Software: PyCharm
 # @Note    :
 import sys
@@ -21,18 +21,18 @@ import dgl
 from dgl.dataloading import GraphDataLoader
 from Main.dataset import WeiboDataset
 from Main.pargs import pargs
-from Main.utils import create_log_dict_semisup, write_log, write_json
+from Main.utils import create_log_dict_sup, write_log, write_json
 from Main.word2vec import Embedding, collect_sentences, train_word2vec
 from Main.models.edcoder import PreModel
 from Main.sort import sort_weibo_dataset, sort_weibo_self_dataset, sort_weibo_2class_dataset
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 
-def semisup_train(unsup_train_loader, train_loader, model, optimizer, device, lamda):
+def sup_train(train_loader, model, optimizer, device, lamda, use_unsup_loss):
     model.train()
     loss_list = []
 
-    for batch_sup, batch_unsup in zip(train_loader, unsup_train_loader):
+    for batch_sup in train_loader:
         optimizer.zero_grad()
 
         batch_sup_g, y = batch_sup
@@ -40,13 +40,9 @@ def semisup_train(unsup_train_loader, train_loader, model, optimizer, device, la
         y = y.to(device)
         sup_x = batch_sup_g.ndata["x"]
 
-        batch_unsup_g, _ = batch_unsup
-        batch_unsup_g = batch_unsup_g.to(device)
-        unsup_x = batch_unsup_g.ndata["x"]
-
         loss = F.binary_cross_entropy(model.predict(batch_sup_g, sup_x), y.to(torch.float32)) + \
-               model(batch_sup_g, sup_x) * lamda + \
-               model(batch_unsup_g, unsup_x) * lamda
+               model(batch_sup_g, sup_x) * lamda if use_unsup_loss else \
+            F.binary_cross_entropy(model.predict(batch_sup_g, sup_x), y.to(torch.float32))
 
         loss.backward()
         optimizer.step()
@@ -128,6 +124,7 @@ if __name__ == '__main__':
     weight_decay = args.weight_decay
     lamda = args.lamda
     epochs = args.epochs
+    use_unsup_loss = args.use_unsup_loss
 
     label_source_path = osp.join(dirname, '..', 'Data', dataset, 'source')
     label_dataset_path = osp.join(dirname, '..', 'Data', dataset, 'dataset')
@@ -142,7 +139,7 @@ if __name__ == '__main__':
     log_json_path = osp.join(dirname, '..', 'Log', f'{log_name}.json')
 
     log = open(log_path, 'w')
-    log_dict = create_log_dict_semisup(args)
+    log_dict = create_log_dict_sup(args)
 
     if not osp.exists(model_path):
         if dataset == 'Weibo':
@@ -160,14 +157,11 @@ if __name__ == '__main__':
                       'test rec T': [], 'test rec F': [], 'test f1 T': [], 'test f1 F': []}
 
         word2vec = Embedding(model_path)
-        unlabel_dataset = WeiboDataset(dataset, unlabel_dataset_path, word2vec, clean=False)
-        unsup_train_loader = GraphDataLoader(unlabel_dataset, batch_size=batch_size,
-                                             collate_fn=collate_fn, shuffle=True)
 
         if dataset == 'Weibo':
-            sort_weibo_dataset(label_source_path, label_dataset_path, k_shot=k)
+            sort_weibo_dataset(label_source_path, label_dataset_path)
         elif 'DRWeibo' in dataset:
-            sort_weibo_2class_dataset(label_source_path, label_dataset_path, k_shot=k)
+            sort_weibo_2class_dataset(label_source_path, label_dataset_path)
 
         train_dataset = WeiboDataset(dataset, train_path, word2vec)
         val_dataset = WeiboDataset(dataset, val_path, word2vec)
@@ -210,7 +204,7 @@ if __name__ == '__main__':
         for epoch in range(1, epochs + 1):
             lr = scheduler.optimizer.param_groups[0]['lr']
 
-            _ = semisup_train(unsup_train_loader, train_loader, model, optimizer, device, lamda)
+            _ = sup_train(train_loader, model, optimizer, device, lamda, use_unsup_loss)
 
             train_error, train_acc, _, _, _ = test(model, train_loader, device)
             val_error, log_info, log_record = test_and_log(model, val_loader, test_loader,

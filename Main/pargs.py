@@ -5,7 +5,8 @@ def pargs():
     str2bool = lambda x: x.lower() == "true"
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--dataset', type=str, default='Weibo')
+    parser.add_argument('--dataset', type=str, default='DRWeiboV3')
+    parser.add_argument('--unsup_dataset', type=str, default='UWeiboV1')
     parser.add_argument('--vector_size', type=int, help='word embedding size', default=200)
     parser.add_argument('--unsup_train_size', type=int, help='word embedding unlabel data train size', default=20000)
     parser.add_argument('--runs', type=int, default=10)
@@ -18,7 +19,7 @@ def pargs():
     parser.add_argument('--unsup_bs_ratio', type=int, default=1)
     parser.add_argument("--num_heads", type=int, default=4, help="number of hidden attention heads")
     parser.add_argument("--num_out_heads", type=int, default=1, help="number of output attention heads")
-    parser.add_argument("--num_layers", type=int, default=4, help="number of hidden layers")
+    parser.add_argument("--num_layers", type=int, default=3, help="number of hidden layers")
     parser.add_argument("--num_hidden", type=int, default=128, help="number of hidden units")
     parser.add_argument("--residual", type=str2bool, default=True, help="use residual connection")
     parser.add_argument("--in_drop", type=float, default=0.2, help="input feature dropout")
@@ -44,6 +45,9 @@ def pargs():
     parser.add_argument('--ft_epochs', type=int, default=100)
     parser.add_argument('--weight_decay', type=float, default=0)
     parser.add_argument('--lamda', dest='lamda', type=float, default=0.001)
+
+    parser.add_argument('--use_unlabel', type=str2bool, default=False)
+    parser.add_argument('--use_unsup_loss', type=str2bool, default=True)
 
     parser.add_argument('--k', type=int, default=10000)
 

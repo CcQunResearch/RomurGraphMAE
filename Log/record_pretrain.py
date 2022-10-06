@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/5/31 17:49
-# @Author  : CcQun
-# @Email   : 13698603020@163.com
+# @Author  :
+# @Email   :
 # @File    : record_pretrain.py
 # @Software: PyCharm
 # @Note    :
@@ -31,7 +31,8 @@ if __name__ == '__main__':
 
             log = json.load(open(filepath, 'r', encoding='utf-8'))
             print('dataset:', log['dataset'])
-            print('vector_size:', log['vector_size'])
+            print('unsup dataset:', log['unsup dataset'])
+            print('vector size:', log['vector size'])
             print('unsup train size:', log['unsup train size'])
             print('runs:', log['runs'])
             print('ft runs:', log['ft runs'])
